@@ -13,28 +13,28 @@ import {
 const presets: PromptPreset[] = [
   {
     id: '1',
-    name: 'Simple Object',
+    name: 'Treasure Chest',
     icon: 'box',
     prompt: 'Create a detailed medieval treasure chest with metal bands, a lock, and wooden planks. Use proper materials for wood and metal.',
     category: 'modeling',
   },
   {
     id: '2',
-    name: 'Room Scene',
+    name: 'Living Room',
     icon: 'home',
     prompt: 'Create a modern minimalist living room with a sofa, coffee table, rug, floor lamp, and a large window. Use warm lighting and neutral materials.',
     category: 'scene',
   },
   {
     id: '3',
-    name: 'Lighting Setup',
+    name: 'Studio Lighting',
     icon: 'lightbulb',
     prompt: 'Set up a professional three-point studio lighting for the current scene with a key light, fill light, and rim light. Use area lights.',
     category: 'lighting',
   },
   {
     id: '4',
-    name: 'Product Render',
+    name: 'Product Shot',
     icon: 'camera',
     prompt: 'Create a product photography setup: place a glass bottle on a turntable with a curved backdrop, soft area lighting, and camera with shallow depth of field.',
     category: 'rendering',
@@ -48,21 +48,21 @@ const presets: PromptPreset[] = [
   },
   {
     id: '6',
-    name: 'Furniture',
+    name: 'Scandinavian Chair',
     icon: 'armchair',
     prompt: 'Create a realistic Scandinavian-style wooden chair with a cushioned seat. Use proper proportions and wood/padding materials.',
     category: 'modeling',
   },
   {
     id: '7',
-    name: 'Nature',
+    name: 'Stylized Tree',
     icon: 'tree',
     prompt: 'Create a low-poly stylized tree with a brown trunk and green foliage canopy. Place it on a small grassy hill with a few rocks.',
     category: 'scene',
   },
   {
     id: '8',
-    name: 'Jewelry',
+    name: 'Diamond Ring',
     icon: 'gem',
     prompt: 'Create a diamond ring: a silver band with a faceted diamond on top. Use metallic material for the band and glass/refractive material for the gem.',
     category: 'modeling',
@@ -70,14 +70,14 @@ const presets: PromptPreset[] = [
 ];
 
 const iconMap: Record<string, React.ReactNode> = {
-  box: <Box size={16} />,
-  home: <Home size={16} />,
-  lightbulb: <Lightbulb size={16} />,
-  camera: <Camera size={16} />,
-  paintbrush: <Paintbrush size={16} />,
-  armchair: <Armchair size={16} />,
-  tree: <TreePine size={16} />,
-  gem: <Gem size={16} />,
+  box: <Box size={18} />,
+  home: <Home size={18} />,
+  lightbulb: <Lightbulb size={18} />,
+  camera: <Camera size={18} />,
+  paintbrush: <Paintbrush size={18} />,
+  armchair: <Armchair size={18} />,
+  tree: <TreePine size={18} />,
+  gem: <Gem size={18} />,
 };
 
 interface PromptChipsProps {
@@ -86,17 +86,20 @@ interface PromptChipsProps {
 
 export default function PromptChips({ onSelect }: PromptChipsProps) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl mx-auto">
-      {presets.map((preset) => (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-w-2xl mx-auto">
+      {presets.map((preset, i) => (
         <button
           key={preset.id}
           onClick={() => onSelect(preset.prompt)}
-          className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-border-custom bg-bg-secondary hover:bg-bg-tertiary hover:border-accent text-left transition-all duration-200 group"
+          className="group glass rounded-xl p-3.5 text-left transition-all duration-200 hover:border-accent/30 hover:bg-bg-glass-hover hover:scale-[1.02] active:scale-[0.98]"
+          style={{ animationDelay: `${i * 30}ms` }}
         >
-          <span className="text-accent group-hover:text-accent-hover transition-colors shrink-0">
-            {iconMap[preset.icon] || <Box size={16} />}
-          </span>
-          <span className="text-xs text-text-secondary group-hover:text-text-primary transition-colors leading-tight">
+          <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center mb-2.5 group-hover:bg-accent/20 transition-colors">
+            <span className="text-accent">
+              {iconMap[preset.icon] || <Box size={18} />}
+            </span>
+          </div>
+          <span className="text-xs font-medium text-text-secondary group-hover:text-text-primary transition-colors leading-tight block">
             {preset.name}
           </span>
         </button>

@@ -8,32 +8,32 @@ interface StatusBarProps {
 
 export default function StatusBar({ blenderConnected, providerName, modelName }: StatusBarProps) {
   return (
-    <footer className="shrink-0 flex items-center justify-between px-4 py-1.5 bg-bg-secondary border-t border-border-custom text-xs text-text-muted">
-      <div className="flex items-center gap-4">
+    <footer className="shrink-0 flex items-center justify-between px-5 py-1.5 bg-bg-secondary/50 border-t border-border-custom text-[11px] text-text-muted">
+      <div className="flex items-center gap-5">
         <div className="flex items-center gap-1.5">
           {blenderConnected ? (
-            <Wifi size={12} className="text-success" />
+            <Wifi size={11} className="text-success" />
           ) : (
-            <WifiOff size={12} className="text-error" />
+            <WifiOff size={11} className="text-error" />
           )}
-          <span className={blenderConnected ? 'text-success' : 'text-error'}>
-            Blender {blenderConnected ? 'Connected' : 'Disconnected'}
+          <span className={blenderConnected ? 'text-success/80' : 'text-error/80'}>
+            {blenderConnected ? 'Connected' : 'Disconnected'}
           </span>
         </div>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-5">
         <div className="flex items-center gap-1.5">
-          <Cpu size={12} />
+          <Cpu size={11} />
           <span>{providerName}</span>
           {modelName && (
             <>
-              <span className="text-border-custom">|</span>
+              <span className="text-border-hover">·</span>
               <span className="text-text-secondary">{modelName}</span>
             </>
           )}
         </div>
         <div className="flex items-center gap-1.5">
-          <Monitor size={12} />
+          <Monitor size={11} />
           <span>BlenderCraft v1.0</span>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ChatMessageUI } from '../lib/types';
-import { Copy, Check, Play, Undo2, Bot, User } from 'lucide-react';
+import { Copy, Check, Bot, User } from 'lucide-react';
 import CodeBlock from './CodeBlock';
 
 interface MessageBubbleProps {
@@ -47,7 +47,7 @@ function isPythonCode(content: string): boolean {
   );
 }
 
-export default function MessageBubble({ message, onExecuteCode, onUndo }: MessageBubbleProps) {
+export default function MessageBubble({ message }: MessageBubbleProps) {
   const [copied, setCopied] = useState(false);
   const isUser = message.role === 'user';
 
@@ -81,16 +81,11 @@ export default function MessageBubble({ message, onExecuteCode, onUndo }: Messag
     if (isPythonCode(message.content) && !isUser) {
       return (
         <div>
-          <CodeBlock
-            code={message.content}
-            language="python"
-            executable={!!onExecuteCode}
-            onExecute={onExecuteCode}
-          />
+          <CodeBlock code={message.content} language="python" />
           {message.executedCode && (
             <div className="flex items-center gap-2 mt-2 px-1">
-              <span className="text-xs text-text-muted bg-bg-elevated px-2 py-0.5 rounded">
-                Code executed in Blender
+              <span className="text-[10px] text-success/70 bg-success/10 px-2 py-0.5 rounded-md font-medium">
+                Executed in Blender
               </span>
             </div>
           )}
@@ -111,13 +106,7 @@ export default function MessageBubble({ message, onExecuteCode, onUndo }: Messag
       <div className="space-y-2">
         {parts.map((part, i) =>
           part.type === 'code' ? (
-            <CodeBlock
-              key={i}
-              code={part.content}
-              language={part.language || 'python'}
-              executable={!!onExecuteCode && part.language === 'python'}
-              onExecute={onExecuteCode}
-            />
+            <CodeBlock key={i} code={part.content} language={part.language || 'python'} />
           ) : (
             <div key={i} className="whitespace-pre-wrap text-sm leading-relaxed">
               {part.content}
@@ -131,30 +120,30 @@ export default function MessageBubble({ message, onExecuteCode, onUndo }: Messag
   return (
     <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
       <div
-        className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+        className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center mt-0.5 ${
           isUser
-            ? 'bg-accent-dim text-accent'
-            : 'bg-bg-elevated text-text-secondary'
+            ? 'gradient-accent text-white'
+            : 'bg-bg-elevated text-text-muted border border-border-custom'
         }`}
       >
-        {isUser ? <User size={16} /> : <Bot size={16} />}
+        {isUser ? <User size={14} /> : <Bot size={14} />}
       </div>
 
       <div className={`flex flex-col max-w-[85%] min-w-0 ${isUser ? 'items-end' : 'items-start'}`}>
         <div
           className={`rounded-2xl px-4 py-3 min-w-0 break-words ${
             isUser
-              ? 'bg-accent text-white rounded-br-md'
+              ? 'gradient-accent text-white rounded-br-lg'
               : message.error
-              ? 'bg-red-900/30 border border-red-800 text-red-200 rounded-bl-md'
-              : 'bg-bg-secondary text-text-primary rounded-bl-md'
+              ? 'bg-error/10 border border-error/20 text-error rounded-bl-lg'
+              : 'glass rounded-bl-lg'
           }`}
         >
           {renderContent()}
         </div>
 
         {message.screenshot && (
-          <div className="mt-2 rounded-lg overflow-hidden border border-border-custom max-w-md">
+          <div className="mt-2 rounded-xl overflow-hidden border border-border-custom max-w-md">
             <img
               src={message.screenshot}
               alt="Blender viewport"
@@ -163,39 +152,20 @@ export default function MessageBubble({ message, onExecuteCode, onUndo }: Messag
           </div>
         )}
 
-        {!message.isLoading && !isUser && (
-          <div className="flex items-center gap-1 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-2 mt-1 px-1">
+          <span className="text-[10px] text-text-muted">
+            {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </span>
+          {!isUser && !message.isLoading && (
             <button
               onClick={handleCopyAll}
-              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded text-text-muted hover:text-text-secondary hover:bg-bg-elevated transition-colors"
+              className="flex items-center gap-1 text-[10px] text-text-muted hover:text-text-secondary transition-colors"
             >
-              {copied ? <Check size={10} /> : <Copy size={10} />}
+              {copied ? <Check size={10} className="text-success" /> : <Copy size={10} />}
               {copied ? 'Copied' : 'Copy'}
             </button>
-            {isPythonCode(message.content) && onExecuteCode && (
-              <button
-                onClick={() => onExecuteCode(message.content)}
-                className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded text-text-muted hover:text-accent hover:bg-accent-dim transition-colors"
-              >
-                <Play size={10} />
-                Re-run
-              </button>
-            )}
-            {message.executedCode && onUndo && (
-              <button
-                onClick={onUndo}
-                className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded text-text-muted hover:text-warning hover:bg-warning/10 transition-colors"
-              >
-                <Undo2 size={10} />
-                Undo
-              </button>
-            )}
-          </div>
-        )}
-
-        <span className="text-[10px] text-text-muted mt-0.5 px-1">
-          {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </span>
+          )}
+        </div>
       </div>
     </div>
   );

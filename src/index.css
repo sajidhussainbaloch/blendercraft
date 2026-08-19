@@ -1,30 +1,35 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg-primary: #1a1a1a;
-  --color-bg-secondary: #242424;
-  --color-bg-tertiary: #2d2d2d;
-  --color-bg-elevated: #383838;
-  --color-border-custom: #404040;
-  --color-border-hover: #555;
-  --color-text-primary: #e8e8e8;
-  --color-text-secondary: #a0a0a0;
-  --color-text-muted: #707070;
+  --color-bg-primary: #0c0c10;
+  --color-bg-secondary: #12121a;
+  --color-bg-tertiary: #1a1a24;
+  --color-bg-elevated: #22222e;
+  --color-bg-glass: rgba(255, 255, 255, 0.03);
+  --color-bg-glass-hover: rgba(255, 255, 255, 0.06);
+  --color-border-custom: rgba(255, 255, 255, 0.06);
+  --color-border-hover: rgba(255, 255, 255, 0.12);
+  --color-border-active: rgba(232, 125, 13, 0.4);
+  --color-text-primary: #f0f0f5;
+  --color-text-secondary: #8888a0;
+  --color-text-muted: #555568;
   --color-accent: #E87D0D;
   --color-accent-hover: #FF8F1F;
-  --color-accent-dim: rgba(232, 125, 13, 0.15);
-  --color-success: #4ADE80;
-  --color-error: #EF4444;
-  --color-warning: #F59E0B;
-  --color-code-bg: #1e1e1e;
+  --color-accent-dim: rgba(232, 125, 13, 0.12);
+  --color-accent-glow: rgba(232, 125, 13, 0.25);
+  --color-success: #34D399;
+  --color-error: #F87171;
+  --color-warning: #FBBF24;
+  --color-info: #60A5FA;
+  --color-code-bg: #0d0d12;
 }
 
 :root {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #e8e8e8;
-  background-color: #1a1a1a;
+  color: #f0f0f5;
+  background-color: #0c0c10;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -43,40 +48,40 @@ html, body, #root {
 }
 
 body {
-  background: #1a1a1a;
+  background: #0c0c10;
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #444;
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #666;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 ::selection {
-  background: rgba(232, 125, 13, 0.25);
-  color: #e8e8e8;
+  background: rgba(232, 125, 13, 0.3);
+  color: #f0f0f5;
 }
 
 pre {
-  background: #1e1e1e !important;
-  border: 1px solid #404040;
-  border-radius: 8px;
-  padding: 12px 16px;
+  background: #0d0d12 !important;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 14px 18px;
   overflow-x: auto;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 code {
@@ -84,15 +89,60 @@ code {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 @keyframes pulse-dot {
-  0%, 80%, 100% { opacity: 0.3; }
+  0%, 80%, 100% { opacity: 0.2; }
   40% { opacity: 1; }
 }
 
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 125, 13, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(232, 125, 13, 0.15); }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.2s ease-out;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glow-accent {
+  box-shadow: 0 0 20px -4px rgba(232, 125, 13, 0.3);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, #E87D0D 0%, #F59E0B 100%);
+}
+
+.gradient-subtle {
+  background: linear-gradient(135deg, rgba(232, 125, 13, 0.08) 0%, rgba(245, 158, 11, 0.04) 100%);
 }

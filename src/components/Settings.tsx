@@ -161,25 +161,25 @@ export default function Settings({
   };
 
   const tabs: Array<{ id: SettingsTab; label: string; icon: React.ReactNode }> = [
-    { id: 'providers', label: 'AI Providers', icon: <Cpu size={14} /> },
-    { id: 'blender', label: 'Blender', icon: <Box size={14} /> },
-    { id: 'model', label: 'Model', icon: <Zap size={14} /> },
+    { id: 'providers', label: 'AI Providers', icon: <Cpu size={15} /> },
+    { id: 'blender', label: 'Blender', icon: <Box size={15} /> },
+    { id: 'model', label: 'Model', icon: <Zap size={15} /> },
   ];
 
   return (
     <div className="h-full flex">
-      <div className="w-44 shrink-0 bg-bg-secondary border-r border-border-custom p-3 flex flex-col gap-1">
-        <h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider px-2 mb-2">
+      <div className="w-48 shrink-0 bg-bg-secondary/50 backdrop-blur-xl border-r border-border-custom p-3 flex flex-col gap-1">
+        <h2 className="text-[10px] font-semibold text-text-muted uppercase tracking-widest px-3 mb-3">
           Settings
         </h2>
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left transition-all ${
+            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-left transition-all duration-200 ${
               activeTab === tab.id
-                ? 'bg-accent-dim text-accent'
-                : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                ? 'bg-accent/15 text-accent font-medium'
+                : 'text-text-secondary hover:text-text-primary hover:bg-bg-glass-hover'
             }`}
           >
             {tab.icon}
@@ -189,20 +189,27 @@ export default function Settings({
         <div className="flex-1" />
         <button
           onClick={handleSave}
-          className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-accent hover:bg-accent-hover text-white transition-colors"
+          className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+            saved
+              ? 'bg-success/15 text-success border border-success/20'
+              : 'gradient-accent text-white hover:scale-[1.02]'
+          }`}
         >
           {saved ? <><Check size={14} /> Saved!</> : 'Save Settings'}
         </button>
       </div>
 
-      <div className="flex-1 min-w-0 overflow-y-auto p-6">
+      <div className="flex-1 min-w-0 overflow-y-auto p-8">
         {activeTab === 'providers' && (
-          <div className="max-w-2xl space-y-4">
+          <div className="max-w-2xl space-y-5">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-text-primary">AI Providers</h3>
+              <div>
+                <h3 className="text-lg font-bold text-text-primary">AI Providers</h3>
+                <p className="text-xs text-text-muted mt-1">Configure your AI model endpoints</p>
+              </div>
               <button
                 onClick={handleAddProvider}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-accent hover:bg-accent-hover text-white transition-colors"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium gradient-accent text-white transition-all hover:scale-[1.02]"
               >
                 <Plus size={14} />
                 Add Provider
@@ -219,39 +226,39 @@ export default function Settings({
                     setDiscoveredModels([]);
                     setTestResult(null);
                   }}
-                  className={`p-3 rounded-lg cursor-pointer transition-all border ${
+                  className={`p-4 rounded-xl cursor-pointer transition-all duration-200 border ${
                     editingProvider?.id === provider.id
-                      ? 'bg-accent-dim border-accent'
+                      ? 'glass border-accent/40 glow-accent'
                       : localSettings.active_provider_id === provider.id
-                      ? 'bg-bg-secondary border-success'
-                      : 'bg-bg-secondary border-border-custom hover:border-border-hover'
+                      ? 'glass border-success/30'
+                      : 'glass hover:border-border-hover'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-3.5 min-w-0">
                       <div
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                           localSettings.active_provider_id === provider.id
-                            ? 'bg-success text-white'
-                            : 'bg-bg-elevated text-text-muted'
+                            ? 'gradient-accent text-white'
+                            : 'bg-bg-elevated text-text-muted border border-border-custom'
                         }`}
                       >
                         {localSettings.active_provider_id === provider.id ? (
-                          <Check size={14} />
+                          <Check size={16} />
                         ) : (
-                          <Cpu size={14} />
+                          <Cpu size={16} />
                         )}
                       </div>
                       <div className="min-w-0">
-                        <div className="text-sm font-medium text-text-primary truncate">
+                        <div className="text-sm font-semibold text-text-primary truncate">
                           {provider.name}
                         </div>
-                        <div className="text-xs text-text-muted flex items-center gap-1 truncate">
+                        <div className="text-xs text-text-muted flex items-center gap-1 truncate mt-0.5">
                           <Globe size={10} className="shrink-0" />
                           <span className="truncate">{provider.base_url}</span>
                         </div>
-                        <div className="text-xs text-text-muted truncate">
-                          Model: {provider.model_id || '(not set)'}
+                        <div className="text-xs text-text-muted truncate mt-0.5">
+                          {provider.model_id || '(no model set)'}
                         </div>
                       </div>
                     </div>
@@ -262,7 +269,7 @@ export default function Settings({
                             e.stopPropagation();
                             handleSetActive(provider.id);
                           }}
-                          className="text-xs px-2 py-1 rounded bg-bg-elevated text-text-secondary hover:text-text-primary transition-colors"
+                          className="text-xs px-2.5 py-1.5 rounded-lg bg-bg-elevated text-text-secondary hover:text-text-primary border border-border-custom hover:border-border-hover transition-all"
                         >
                           Activate
                         </button>
@@ -272,9 +279,9 @@ export default function Settings({
                           e.stopPropagation();
                           handleDeleteProvider(provider.id);
                         }}
-                        className="text-xs p-1 rounded hover:bg-red-900/30 text-text-muted hover:text-error transition-colors"
+                        className="text-xs p-1.5 rounded-lg hover:bg-error/10 text-text-muted hover:text-error transition-all"
                       >
-                        <Trash2 size={12} />
+                        <Trash2 size={13} />
                       </button>
                     </div>
                   </div>
@@ -283,32 +290,17 @@ export default function Settings({
             </div>
 
             {editingProvider && (
-              <div className="mt-4 p-4 bg-bg-secondary rounded-lg border border-border-custom space-y-3">
-                <h4 className="text-sm font-medium text-text-primary">
+              <div className="mt-5 p-5 glass rounded-2xl space-y-4 gradient-subtle">
+                <h4 className="text-sm font-bold text-text-primary">
                   {isAddingNew ? 'Add Provider' : 'Edit Provider'}
                 </h4>
-                <InputField
-                  label="Name"
-                  value={editingProvider.name}
-                  onChange={(v) => setEditingProvider({ ...editingProvider, name: v })}
-                  icon={<Cpu size={12} />}
-                />
-                <InputField
-                  label="Base URL"
-                  value={editingProvider.base_url}
-                  onChange={(v) => setEditingProvider({ ...editingProvider, base_url: v })}
-                  placeholder="https://api.openai.com/v1"
-                  icon={<Globe size={12} />}
-                />
-                <InputField
-                  label="API Key"
-                  value={editingProvider.api_key}
-                  onChange={(v) => setEditingProvider({ ...editingProvider, api_key: v })}
-                  placeholder="sk-... (optional for local models)"
-                  type="password"
-                  icon={<Key size={12} />}
-                />
-                <div>
+                <div className="grid grid-cols-2 gap-4">
+                  <InputField
+                    label="Name"
+                    value={editingProvider.name}
+                    onChange={(v) => setEditingProvider({ ...editingProvider, name: v })}
+                    icon={<Cpu size={12} />}
+                  />
                   <InputField
                     label="Model ID"
                     value={editingProvider.model_id}
@@ -316,32 +308,50 @@ export default function Settings({
                     placeholder="gpt-4o, qwen2.5-coder, etc."
                     icon={<Zap size={12} />}
                   />
+                </div>
+                <InputField
+                  label="Base URL"
+                  value={editingProvider.base_url}
+                  onChange={(v) => setEditingProvider({ ...editingProvider, base_url: v })}
+                  placeholder="https://api.openai.com/v1"
+                  icon={<Globe size={12} />}
+                />
+                <div className="flex items-end gap-3">
+                  <InputField
+                    label="API Key"
+                    value={editingProvider.api_key}
+                    onChange={(v) => setEditingProvider({ ...editingProvider, api_key: v })}
+                    placeholder="sk-... (optional for local)"
+                    type="password"
+                    icon={<Key size={12} />}
+                    className="flex-1"
+                  />
                   <button
                     onClick={() => handleFetchModels(editingProvider)}
                     disabled={modelsLoading}
-                    className="mt-1.5 text-xs text-accent hover:text-accent-hover flex items-center gap-1"
+                    className="shrink-0 h-9 px-3 rounded-lg text-xs font-medium bg-bg-elevated text-text-secondary hover:text-text-primary border border-border-custom hover:border-border-hover transition-all flex items-center gap-1.5"
                   >
-                    {modelsLoading ? <Loader2 size={10} className="animate-spin" /> : <ChevronDown size={10} />}
-                    {modelsLoading ? 'Fetching...' : 'Fetch available models'}
+                    {modelsLoading ? <Loader2 size={11} className="animate-spin" /> : <ChevronDown size={11} />}
+                    {modelsLoading ? 'Loading...' : 'Fetch Models'}
                   </button>
-                  {discoveredModels.length > 0 && (
-                    <div className="mt-2 max-h-40 overflow-y-auto bg-bg-primary rounded-lg border border-border-custom">
-                      {discoveredModels.map((model) => (
-                        <button
-                          key={model}
-                          onClick={() => setEditingProvider({ ...editingProvider, model_id: model })}
-                          className="w-full text-left text-xs text-text-secondary hover:text-text-primary hover:bg-bg-tertiary px-3 py-2 transition-colors border-b border-border-custom last:border-b-0"
-                        >
-                          {model}
-                        </button>
-                      ))}
-                    </div>
-                  )}
                 </div>
-                <div className="flex items-center gap-2 pt-2">
+                {discoveredModels.length > 0 && (
+                  <div className="max-h-36 overflow-y-auto rounded-xl border border-border-custom bg-bg-primary/50">
+                    {discoveredModels.map((model) => (
+                      <button
+                        key={model}
+                        onClick={() => setEditingProvider({ ...editingProvider, model_id: model })}
+                        className="w-full text-left text-xs text-text-secondary hover:text-text-primary hover:bg-bg-glass-hover px-3.5 py-2 transition-colors border-b border-border-custom last:border-b-0"
+                      >
+                        {model}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div className="flex items-center gap-2 pt-1">
                   <button
                     onClick={handleSaveProvider}
-                    className="px-4 py-2 rounded-lg text-sm font-medium bg-accent hover:bg-accent-hover text-white transition-colors"
+                    className="px-5 py-2 rounded-xl text-sm font-medium gradient-accent text-white transition-all hover:scale-[1.02]"
                   >
                     Save
                   </button>
@@ -350,25 +360,25 @@ export default function Settings({
                       setEditingProvider(null);
                       setIsAddingNew(false);
                     }}
-                    className="px-4 py-2 rounded-lg text-sm bg-bg-elevated text-text-secondary hover:text-text-primary transition-colors"
+                    className="px-5 py-2 rounded-xl text-sm bg-bg-elevated text-text-secondary hover:text-text-primary border border-border-custom transition-all"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => handleTestConnection(editingProvider)}
                     disabled={testing}
-                    className="px-4 py-2 rounded-lg text-sm font-medium bg-green-800 hover:bg-green-700 text-white transition-colors flex items-center gap-1.5"
+                    className="px-5 py-2 rounded-xl text-sm font-medium bg-success/15 text-success border border-success/20 hover:bg-success/25 transition-all flex items-center gap-1.5"
                   >
                     {testing ? <Loader2 size={12} className="animate-spin" /> : <Wifi size={12} />}
-                    {testing ? 'Testing...' : 'Test'}
+                    {testing ? 'Testing...' : 'Test Connection'}
                   </button>
                 </div>
                 {testResult && (
                   <div
-                    className={`text-sm p-3 rounded-lg ${
+                    className={`text-sm p-3.5 rounded-xl border ${
                       testResult.ok
-                        ? 'bg-green-900/30 text-green-400 border border-green-800'
-                        : 'bg-red-900/30 text-red-400 border border-red-800'
+                        ? 'bg-success/10 text-success border-success/20'
+                        : 'bg-error/10 text-error border-error/20'
                     }`}
                   >
                     {testResult.msg}
@@ -380,9 +390,12 @@ export default function Settings({
         )}
 
         {activeTab === 'blender' && (
-          <div className="max-w-2xl space-y-4">
-            <h3 className="text-lg font-semibold text-text-primary">Blender Connection</h3>
-            <div className="p-4 bg-bg-secondary rounded-lg border border-border-custom space-y-4">
+          <div className="max-w-2xl space-y-5">
+            <div>
+              <h3 className="text-lg font-bold text-text-primary">Blender Connection</h3>
+              <p className="text-xs text-text-muted mt-1">Connect to the BlenderCraft addon</p>
+            </div>
+            <div className="glass rounded-2xl p-5 space-y-5">
               <div className="flex items-end gap-4">
                 <InputField
                   label="Host"
@@ -394,27 +407,28 @@ export default function Settings({
                   label="Port"
                   value={String(localSettings.blender_port)}
                   onChange={(v) => setLocalSettings({ ...localSettings, blender_port: parseInt(v) || 9876 })}
-                  className="w-24"
+                  className="w-28"
                 />
                 <button
                   onClick={handleToggleBlender}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                     blenderConnected
-                      ? 'bg-red-800 hover:bg-red-700 text-white'
-                      : 'bg-accent hover:bg-accent-hover text-white'
+                      ? 'bg-error/15 text-error border border-error/20 hover:bg-error/25'
+                      : 'gradient-accent text-white hover:scale-[1.02]'
                   }`}
                 >
                   {blenderConnected ? <WifiOff size={14} /> : <Wifi size={14} />}
                   {blenderConnected ? 'Disconnect' : 'Connect'}
                 </button>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <span
-                  className={`w-2.5 h-2.5 rounded-full ${
-                    blenderConnected ? 'bg-success' : 'bg-error'
-                  }`}
-                />
-                <span className="text-text-secondary">
+              <div className="flex items-center gap-2.5 text-sm">
+                <div className="relative">
+                  <div className={`w-2.5 h-2.5 rounded-full ${blenderConnected ? 'bg-success' : 'bg-error'}`} />
+                  {blenderConnected && (
+                    <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-success animate-ping opacity-30" />
+                  )}
+                </div>
+                <span className={blenderConnected ? 'text-success/80' : 'text-error/80'}>
                   {blenderConnected ? 'Connected to Blender' : 'Not connected'}
                 </span>
               </div>
@@ -423,30 +437,33 @@ export default function Settings({
         )}
 
         {activeTab === 'model' && (
-          <div className="max-w-2xl space-y-4">
-            <h3 className="text-lg font-semibold text-text-primary">Model Settings</h3>
-            <div className="p-4 bg-bg-secondary rounded-lg border border-border-custom space-y-4">
+          <div className="max-w-2xl space-y-5">
+            <div>
+              <h3 className="text-lg font-bold text-text-primary">Model Settings</h3>
+              <p className="text-xs text-text-muted mt-1">Configure AI model parameters</p>
+            </div>
+            <div className="glass rounded-2xl p-5 space-y-5">
               <div className="flex gap-4">
                 <InputField
                   label="Temperature"
                   value={String(localSettings.temperature)}
                   onChange={(v) => setLocalSettings({ ...localSettings, temperature: parseFloat(v) || 0.3 })}
-                  className="w-24"
+                  className="w-28"
                 />
                 <InputField
                   label="Max Tokens"
                   value={String(localSettings.max_tokens)}
                   onChange={(v) => setLocalSettings({ ...localSettings, max_tokens: parseInt(v) || 8192 })}
-                  className="w-28"
+                  className="w-32"
                 />
               </div>
               <div>
-                <label className="block text-xs text-text-muted mb-1.5">System Prompt</label>
+                <label className="block text-xs text-text-muted mb-2 font-medium">System Prompt</label>
                 <textarea
                   value={localSettings.system_prompt}
                   onChange={(e) => setLocalSettings({ ...localSettings, system_prompt: e.target.value })}
                   rows={12}
-                  className="w-full bg-bg-primary text-text-primary rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-accent resize-y border border-border-custom"
+                  className="w-full bg-bg-primary/80 text-text-primary rounded-xl px-4 py-3 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-accent/40 resize-y border border-border-custom transition-colors"
                 />
               </div>
             </div>
@@ -476,10 +493,10 @@ function InputField({
 }) {
   return (
     <div className={className}>
-      <label className="block text-xs text-text-muted mb-1.5">{label}</label>
+      <label className="block text-xs text-text-muted mb-1.5 font-medium">{label}</label>
       <div className="relative">
         {icon && (
-          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
             {icon}
           </span>
         )}
@@ -488,8 +505,8 @@ function InputField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className={`w-full bg-bg-primary text-text-primary rounded-lg py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent border border-border-custom transition-colors ${
-            icon ? 'pl-8 pr-3' : 'px-3'
+          className={`w-full bg-bg-primary/80 text-text-primary rounded-xl py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 border border-border-custom transition-all ${
+            icon ? 'pl-9 pr-3' : 'px-3'
           }`}
         />
       </div>

@@ -9,7 +9,7 @@ import {
 import MessageBubble from './MessageBubble';
 import PromptChips from './PromptChips';
 import TaskProgress from './TaskProgress';
-import { Send, Square } from 'lucide-react';
+import { Send, Square, Sparkles } from 'lucide-react';
 
 interface ChatProps {
   settings: AppSettings;
@@ -44,7 +44,6 @@ export default function Chat({ blenderConnected }: ChatProps) {
           const events = await getAgentEvents();
           if (events.length > 0) {
             setAgentEvents((prev) => [...prev, ...events]);
-            // Check if task completed
             const completed = events.find(
               (e) => e.type === 'Completed' || e.type === 'Cancelled' || e.type === 'Error'
             );
@@ -146,33 +145,34 @@ export default function Chat({ blenderConnected }: ChatProps) {
 
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="flex-1 overflow-y-auto px-4 py-6 min-h-0">
+      <div className="flex-1 overflow-y-auto px-6 py-8 min-h-0">
         {messages.length === 0 && !currentTaskId ? (
-          <div className="flex flex-col items-center justify-center h-full gap-8">
+          <div className="flex flex-col items-center justify-center h-full gap-10 animate-fade-in">
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-accent-dim flex items-center justify-center">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-accent">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+              <div className="w-20 h-20 mx-auto mb-6 rounded-3xl gradient-accent flex items-center justify-center glow-accent">
+                <Sparkles size={36} className="text-white" />
               </div>
-              <h2 className="text-xl font-semibold text-text-primary mb-2">
+              <h1 className="text-2xl font-bold text-text-primary mb-3 tracking-tight">
                 What do you want to create?
-              </h2>
-              <p className="text-sm text-text-muted max-w-md">
-                Describe your 3D scene, object, or idea. BlenderCraft will plan, create, and verify in Blender.
+              </h1>
+              <p className="text-sm text-text-secondary max-w-md leading-relaxed">
+                Describe your 3D scene, object, or idea in plain language.
+                <br />
+                BlenderCraft will plan, build, and verify it in Blender.
               </p>
               {!blenderConnected && (
-                <p className="text-xs text-warning mt-3 bg-warning/10 px-3 py-2 rounded-lg">
-                  Blender is not connected. Start the BlenderCraft addon in Blender first.
-                </p>
+                <div className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-warning/10 border border-warning/20 text-warning text-xs font-medium">
+                  <div className="w-1.5 h-1.5 rounded-full bg-warning animate-pulse" />
+                  Blender is not connected. Start the addon first.
+                </div>
               )}
             </div>
             <PromptChips onSelect={(prompt) => sendMessage(prompt)} />
           </div>
         ) : (
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="max-w-3xl mx-auto space-y-5">
             {messages.map((msg) => (
-              <div key={msg.id} className="group animate-fade-in">
+              <div key={msg.id} className="animate-fade-in">
                 <MessageBubble message={msg} />
               </div>
             ))}
@@ -186,9 +186,9 @@ export default function Chat({ blenderConnected }: ChatProps) {
         )}
       </div>
 
-      <div className="shrink-0 border-t border-border-custom bg-bg-secondary px-4 py-3">
-        <div className="max-w-3xl mx-auto flex items-end gap-2">
-          <div className="flex-1 min-w-0 relative">
+      <div className="shrink-0 px-6 pb-4 pt-2">
+        <div className="max-w-3xl mx-auto">
+          <div className="glass-strong rounded-2xl p-2 flex items-end gap-2 transition-all focus-within:border-accent/30 focus-within:glow-accent">
             <textarea
               ref={textareaRef}
               value={input}
@@ -201,31 +201,37 @@ export default function Chat({ blenderConnected }: ChatProps) {
               }
               disabled={isLoading}
               rows={1}
-              className="w-full bg-bg-tertiary text-text-primary rounded-xl px-4 py-3 pr-12 resize-none focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50 text-sm placeholder:text-text-muted border border-border-custom focus:border-accent transition-colors"
+              className="flex-1 bg-transparent text-text-primary px-3 py-2.5 resize-none focus:outline-none text-sm placeholder:text-text-muted min-w-0"
             />
-            <div className="absolute right-2 bottom-2 flex items-center gap-1">
-              {blenderConnected && !isLoading && (
-                <span className="w-2 h-2 rounded-full bg-success" title="Blender connected" />
+            {isLoading ? (
+              <button
+                onClick={handleCancel}
+                className="shrink-0 w-10 h-10 rounded-xl bg-error/90 hover:bg-error text-white flex items-center justify-center transition-all duration-200 hover:scale-105"
+                title="Stop task"
+              >
+                <Square size={16} />
+              </button>
+            ) : (
+              <button
+                onClick={() => sendMessage()}
+                disabled={!input.trim()}
+                className="shrink-0 w-10 h-10 rounded-xl gradient-accent text-white flex items-center justify-center transition-all duration-200 hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 disabled:cursor-not-allowed"
+              >
+                <Send size={16} />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center justify-between mt-2 px-1">
+            <div className="flex items-center gap-1.5">
+              {blenderConnected && (
+                <span className="flex items-center gap-1.5 text-[10px] text-success/80">
+                  <span className="w-1.5 h-1.5 rounded-full bg-success" />
+                  Blender connected
+                </span>
               )}
             </div>
+            <span className="text-[10px] text-text-muted">Enter to send, Shift+Enter for new line</span>
           </div>
-          {isLoading ? (
-            <button
-              onClick={handleCancel}
-              className="shrink-0 w-10 h-10 rounded-xl bg-error hover:bg-red-600 text-white flex items-center justify-center transition-colors"
-              title="Stop task"
-            >
-              <Square size={18} />
-            </button>
-          ) : (
-            <button
-              onClick={() => sendMessage()}
-              disabled={!input.trim()}
-              className="shrink-0 w-10 h-10 rounded-xl bg-accent hover:bg-accent-hover disabled:bg-bg-elevated disabled:text-text-muted text-white flex items-center justify-center transition-colors"
-            >
-              <Send size={18} />
-            </button>
-          )}
         </div>
       </div>
     </div>

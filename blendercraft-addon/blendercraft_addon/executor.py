@@ -1,6 +1,7 @@
 import bpy
 import sys
 import io
+import time
 import traceback
 
 
@@ -17,6 +18,11 @@ def execute_code(code):
         exec(code, namespace)
         output = sys.stdout.getvalue()
         result["result"]["output"] = output
+
+        # Let Blender's depsgraph catch up
+        bpy.context.view_layer.update()
+        time.sleep(0.05)
+
     except Exception:
         tb = traceback.format_exc()
         result["status"] = "error"

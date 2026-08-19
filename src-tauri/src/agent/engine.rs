@@ -211,6 +211,9 @@ impl AgentEngine {
 
                     all_tool_results.push(result.clone());
 
+                    // Brief pause to let Blender's depsgraph process
+                    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+
                     // Add tool result to conversation
                     ctx.conversation.push(crate::agent::state::ConversationEntry {
                         role: "assistant".into(),
