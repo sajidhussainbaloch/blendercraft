@@ -1,6 +1,7 @@
 import socket
 import json
 import threading
+import traceback
 import bpy
 from .executor import execute_code
 from .scene import get_scene_info, get_object_info
@@ -55,9 +56,16 @@ class BlenderCraftServer:
     def _handle_client(self, conn, addr):
         print(f"[BlenderCraft] Client connected: {addr}")
         try:
+            conn.settimeout(300.0)
             buffer = ""
             while self.running:
-                data = conn.recv(65536)
+                try:
+                    data = conn.recv(65536)
+                except socket.timeout:
+                    continue
+                except (ConnectionResetError, OSError):
+                    break
+
                 if not data:
                     break
                 buffer += data.decode("utf-8")
@@ -69,14 +77,28 @@ class BlenderCraftServer:
                     try:
                         request = json.loads(line)
                         response = self._process_command(request)
-                        conn.sendall((json.dumps(response) + "\n").encode("utf-8"))
+                        resp_json = json.dumps(response) + "\n"
+                        conn.sendall(resp_json.encode("utf-8"))
                     except json.JSONDecodeError as e:
                         error_resp = {"status": "error", "error": f"Invalid JSON: {e}"}
-                        conn.sendall((json.dumps(error_resp) + "\n").encode("utf-8"))
+                        try:
+                            conn.sendall((json.dumps(error_resp) + "\n").encode("utf-8"))
+                        except (BrokenPipeError, OSError):
+                            break
+                    except Exception as e:
+                        print(f"[BlenderCraft] Command error: {e}")
+                        error_resp = {"status": "error", "error": str(e)}
+                        try:
+                            conn.sendall((json.dumps(error_resp) + "\n").encode("utf-8"))
+                        except (BrokenPipeError, OSError):
+                            break
         except Exception as e:
             print(f"[BlenderCraft] Client error: {e}")
         finally:
-            conn.close()
+            try:
+                conn.close()
+            except Exception:
+                pass
             print(f"[BlenderCraft] Client disconnected: {addr}")
 
     def _process_command(self, request):
@@ -105,7 +127,10 @@ class BlenderCraftServer:
         code = params.get("code", "")
         if not code:
             return {"status": "error", "error": "No code provided"}
-        result = execute_code(code)
+        try:
+            result = execute_code(code)
+        except Exception as e:
+            result = {"status": "error", "error": str(e)}
         try:
             props = bpy.context.scene.blendercraft
             props.last_command = code[:100]
