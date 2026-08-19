@@ -1,5 +1,6 @@
-use crate::config::{AiProvider, ChatMessage, ChatRequest, ChatResponse, ModelListResponse};
+use crate::config::{AppSettings, AiProvider, ChatMessage, ChatRequest, ChatResponse, ModelListResponse};
 use reqwest::Client;
+use serde_json::Value;
 use std::time::Duration;
 
 pub struct AiClient {
@@ -94,6 +95,71 @@ impl AiClient {
             .first()
             .map(|c| c.message.content.clone())
             .ok_or_else(|| "No response from AI".into())
+    }
+
+    pub async fn send_chat_with_tools(
+        &self,
+        provider: &AppSettings,
+        messages: Vec<ChatMessage>,
+        tools: Value,
+    ) -> Result<String, String> {
+        let url = format!("{}/chat/completions", provider.providers.iter().find(|p| p.id == provider.active_provider_id).map(|p| p.base_url.as_str()).unwrap_or("http://localhost:11434/v1").trim_end_matches('/'));
+
+        let model = provider.providers.iter().find(|p| p.id == provider.active_provider_id).map(|p| p.model_id.as_str()).unwrap_or("qwen2.5-coder");
+
+        let body = serde_json::json!({
+            "model": model,
+            "messages": messages.iter().map(|m| serde_json::json!({
+                "role": m.role,
+                "content": m.content
+            })).collect::<Vec<_>>(),
+            "tools": tools,
+            "tool_choice": "auto",
+            "temperature": provider.temperature,
+            "max_tokens": provider.max_tokens,
+            "stream": false
+        });
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert("Content-Type", "application/json".parse().unwrap());
+
+        let active = provider.providers.iter().find(|p| p.id == provider.active_provider_id);
+        if let Some(active) = active {
+            if !active.api_key.is_empty() {
+                let auth_value = format!("Bearer {}", active.api_key);
+                headers.insert(
+                    reqwest::header::AUTHORIZATION,
+                    auth_value.parse().unwrap(),
+                );
+            }
+        }
+
+        let resp = self
+            .request_with_retry(
+                self.http.post(&url).headers(headers).json(&body),
+            )
+            .await?;
+
+        if !resp.status().is_success() {
+            let status = resp.status();
+            let body = resp.text().await.unwrap_or_default();
+            return Err(format!("API error {status}: {body}"));
+        }
+
+        let response: Value = resp
+            .json()
+            .await
+            .map_err(|e| format!("Failed to parse response: {e}"))?;
+
+        // Extract the assistant message
+        let choice = response
+            .get("choices")
+            .and_then(|v| v.get(0))
+            .ok_or("No choices in response")?;
+
+        let message = choice.get("message").ok_or("No message in choice")?;
+
+        Ok(serde_json::to_string(message).unwrap_or_default())
     }
 
     pub async fn fetch_models(

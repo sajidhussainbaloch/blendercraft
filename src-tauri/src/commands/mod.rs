@@ -1,14 +1,18 @@
+use crate::agent::{AgentEngine, AgentEvent};
 use crate::ai::AiClient;
 use crate::blender::BlenderClient;
 use crate::config::{AppSettings, AiProvider, ChatMessage};
 use serde_json::Value;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use tauri::State;
 
 pub struct AppState {
     pub settings: Mutex<AppSettings>,
     pub blender: BlenderClient,
     pub ai: AiClient,
+    pub agent: AgentEngine,
+    pub agent_events: Arc<Mutex<Vec<AgentEvent>>>,
+    pub agent_abort: Arc<Mutex<bool>>,
 }
 
 #[tauri::command]
@@ -20,15 +24,19 @@ pub async fn get_settings(state: State<'_, AppState>) -> Result<AppSettings, Str
 #[tauri::command]
 pub async fn save_settings(state: State<'_, AppState>, settings: AppSettings) -> Result<(), String> {
     let mut current = state.settings.lock().map_err(|e| e.to_string())?;
-    *current = settings;
-    Ok(())
+    *current = settings.clone();
+    drop(current);
+    settings.save()
 }
 
 #[tauri::command]
 pub async fn add_provider(state: State<'_, AppState>, provider: AiProvider) -> Result<AppSettings, String> {
     let mut settings = state.settings.lock().map_err(|e| e.to_string())?;
     settings.providers.push(provider);
-    Ok(settings.clone())
+    let s = settings.clone();
+    drop(settings);
+    s.save()?;
+    Ok(s)
 }
 
 #[tauri::command]
@@ -37,21 +45,30 @@ pub async fn update_provider(state: State<'_, AppState>, provider: AiProvider) -
     if let Some(p) = settings.providers.iter_mut().find(|p| p.id == provider.id) {
         *p = provider;
     }
-    Ok(settings.clone())
+    let s = settings.clone();
+    drop(settings);
+    s.save()?;
+    Ok(s)
 }
 
 #[tauri::command]
 pub async fn delete_provider(state: State<'_, AppState>, provider_id: String) -> Result<AppSettings, String> {
     let mut settings = state.settings.lock().map_err(|e| e.to_string())?;
     settings.providers.retain(|p| p.id != provider_id);
-    Ok(settings.clone())
+    let s = settings.clone();
+    drop(settings);
+    s.save()?;
+    Ok(s)
 }
 
 #[tauri::command]
 pub async fn set_active_provider(state: State<'_, AppState>, provider_id: String) -> Result<AppSettings, String> {
     let mut settings = state.settings.lock().map_err(|e| e.to_string())?;
     settings.active_provider_id = provider_id;
-    Ok(settings.clone())
+    let s = settings.clone();
+    drop(settings);
+    s.save()?;
+    Ok(s)
 }
 
 #[tauri::command]
@@ -169,4 +186,50 @@ pub async fn get_scene_context(state: State<'_, AppState>) -> Result<String, Str
         }
     }
     Ok("Scene info unavailable".into())
+}
+
+#[tauri::command]
+pub async fn run_agent_task(
+    state: State<'_, AppState>,
+    request: String,
+) -> Result<String, String> {
+    // Clear previous events
+    {
+        let mut events = state.agent_events.lock().map_err(|e| e.to_string())?;
+        events.clear();
+    }
+
+    // Reset abort flag
+    {
+        let mut abort = state.agent_abort.lock().map_err(|e| e.to_string())?;
+        *abort = false;
+    }
+
+    let settings = state.settings.lock().map_err(|e| e.to_string())?.clone();
+    let events = state.agent_events.clone();
+    let abort_flag = state.agent_abort.clone();
+
+    state.agent.run_task(
+        &request,
+        &settings,
+        &state.ai,
+        &state.blender,
+        &events,
+        &abort_flag,
+    ).await
+}
+
+#[tauri::command]
+pub async fn cancel_agent_task(state: State<'_, AppState>) -> Result<(), String> {
+    let mut abort = state.agent_abort.lock().map_err(|e| e.to_string())?;
+    *abort = true;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn get_agent_events(state: State<'_, AppState>) -> Result<Vec<AgentEvent>, String> {
+    let mut events = state.agent_events.lock().map_err(|e| e.to_string())?;
+    let result = events.clone();
+    events.clear();
+    Ok(result)
 }

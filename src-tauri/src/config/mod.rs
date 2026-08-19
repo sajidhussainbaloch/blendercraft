@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AiProvider {
@@ -36,17 +37,6 @@ pub struct ChatChoice {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct StreamChunk {
-    pub choices: Vec<StreamChoice>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct StreamChoice {
-    pub delta: Option<ChatMessage>,
-    pub finish_reason: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ModelInfo {
     pub id: String,
 }
@@ -80,6 +70,36 @@ pub struct AppSettings {
     pub max_tokens: u32,
     pub system_prompt: String,
     pub stream: bool,
+}
+
+impl AppSettings {
+    pub fn settings_path() -> PathBuf {
+        let mut path = dirs::config_dir().unwrap_or_else(|| PathBuf::from("."));
+        path.push("BlenderCraft");
+        std::fs::create_dir_all(&path).ok();
+        path.push("settings.json");
+        path
+    }
+
+    pub fn load() -> Self {
+        let path = Self::settings_path();
+        match std::fs::read_to_string(&path) {
+            Ok(data) => serde_json::from_str(&data).unwrap_or_else(|e| {
+                eprintln!("[BlenderCraft] Failed to parse settings: {e}, using defaults");
+                Self::default()
+            }),
+            Err(e) => {
+                eprintln!("[BlenderCraft] No settings file ({e}), using defaults");
+                Self::default()
+            }
+        }
+    }
+
+    pub fn save(&self) -> Result<(), String> {
+        let path = Self::settings_path();
+        let json = serde_json::to_string_pretty(self).map_err(|e| e.to_string())?;
+        std::fs::write(&path, json).map_err(|e| format!("Failed to write settings: {e}"))
+    }
 }
 
 impl Default for AppSettings {

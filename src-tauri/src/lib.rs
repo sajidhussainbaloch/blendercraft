@@ -1,3 +1,4 @@
+mod agent;
 mod ai;
 mod blender;
 mod commands;
@@ -5,11 +6,11 @@ mod config;
 
 use commands::AppState;
 use config::AppSettings;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let settings = AppSettings::default();
+    let settings = AppSettings::load();
     let blender_host = settings.blender_host.clone();
     let blender_port = settings.blender_port;
 
@@ -28,6 +29,9 @@ pub fn run() {
             settings: Mutex::new(settings),
             blender: blender::BlenderClient::new(&blender_host, blender_port),
             ai: ai::AiClient::new(),
+            agent: agent::AgentEngine::new(),
+            agent_events: Arc::new(Mutex::new(Vec::new())),
+            agent_abort: Arc::new(Mutex::new(false)),
         })
         .invoke_handler(tauri::generate_handler![
             commands::get_settings,
@@ -48,6 +52,9 @@ pub fn run() {
             commands::ping_blender,
             commands::undo_blender,
             commands::get_scene_context,
+            commands::run_agent_task,
+            commands::cancel_agent_task,
+            commands::get_agent_events,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

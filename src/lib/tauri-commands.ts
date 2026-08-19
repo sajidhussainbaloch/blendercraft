@@ -72,3 +72,33 @@ export async function undoBlender(): Promise<Record<string, unknown>> {
 export async function getSceneContext(): Promise<string> {
   return invoke('get_scene_context');
 }
+
+export async function runAgentTask(request: string): Promise<string> {
+  return invoke('run_agent_task', { request });
+}
+
+export async function cancelAgentTask(): Promise<void> {
+  return invoke('cancel_agent_task');
+}
+
+export async function getAgentEvents(): Promise<AgentEvent[]> {
+  return invoke('get_agent_events');
+}
+
+export interface AgentEvent {
+  type: string;
+  task_id?: string;
+  user_request?: string;
+  call_id?: string;
+  tool_name?: string;
+  arguments?: Record<string, unknown>;
+  status?: string;
+  message?: string;
+  image?: string;
+  step?: number;
+  total?: number;
+  description?: string;
+  summary?: string;
+  recoverable?: boolean;
+  reason?: string;
+}
