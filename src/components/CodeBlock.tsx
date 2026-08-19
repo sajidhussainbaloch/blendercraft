@@ -20,14 +20,14 @@ export default function CodeBlock({ code, language = 'python' }: CodeBlockProps)
   };
 
   return (
-    <div className="my-3 rounded-xl overflow-hidden border border-border-custom group">
-      <div className="flex items-center justify-between px-3.5 py-2 bg-bg-elevated/80 border-b border-border-custom">
-        <span className="text-[11px] text-text-muted font-mono uppercase tracking-wider">{language}</span>
+    <div className="my-2 rounded-lg overflow-hidden border border-border-custom group">
+      <div className="flex items-center justify-between px-3 py-1.5 bg-bg-elevated border-b border-border-custom">
+        <span className="text-[10px] text-text-muted font-mono uppercase tracking-wider">{language}</span>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-2 py-1 text-[11px] rounded-lg bg-bg-tertiary/80 text-text-muted hover:text-text-primary hover:bg-bg-glass-hover transition-all opacity-0 group-hover:opacity-100"
+          className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded bg-bg-tertiary text-text-muted hover:text-text-secondary no-shift opacity-0 group-hover:opacity-100"
         >
-          {copied ? <Check size={10} className="text-success" /> : <Copy size={10} />}
+          {copied ? <Check size={9} className="text-success" /> : <Copy size={9} />}
           {copied ? 'Copied' : 'Copy'}
         </button>
       </div>
@@ -36,10 +36,10 @@ export default function CodeBlock({ code, language = 'python' }: CodeBlockProps)
         style={oneDark}
         customStyle={{
           margin: 0,
-          padding: '14px 18px',
-          background: '#0d0d12',
-          fontSize: '13px',
-          lineHeight: '1.65',
+          padding: '12px 16px',
+          background: '#0a0a10',
+          fontSize: '12.5px',
+          lineHeight: '1.6',
           borderRadius: 0,
           border: 'none',
         }}

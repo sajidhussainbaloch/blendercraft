@@ -33,22 +33,10 @@ export default function App() {
     return (
       <div className="w-full h-full flex items-center justify-center bg-bg-primary">
         <div className="text-center animate-fade-in">
-          <div className="w-16 h-16 mx-auto mb-5 rounded-2xl gradient-accent flex items-center justify-center glow-accent">
-            <Box size={30} className="text-white" />
+          <div className="w-14 h-14 mx-auto mb-4 rounded-xl gradient-accent flex items-center justify-center" style={{ boxShadow: '0 0 30px -6px rgba(232,125,13,0.4)' }}>
+            <Box size={26} className="text-white" />
           </div>
           <div className="text-text-secondary text-sm font-medium">Loading BlenderCraft</div>
-          <div className="mt-2 flex justify-center gap-1">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="w-1 h-1 rounded-full bg-accent"
-                style={{
-                  animation: 'pulse-dot 1.4s ease-in-out infinite',
-                  animationDelay: `${i * 0.2}s`,
-                }}
-              />
-            ))}
-          </div>
         </div>
       </div>
     );
@@ -61,37 +49,44 @@ export default function App() {
   return (
     <div className="w-full h-full flex flex-col bg-bg-primary">
       <div className="flex-1 flex min-h-0">
-        <nav className="w-14 bg-bg-secondary/80 backdrop-blur-xl border-r border-border-custom flex flex-col items-center py-4 gap-1.5 shrink-0">
-          <div className="w-9 h-9 rounded-xl gradient-accent flex items-center justify-center mb-3 glow-accent" title="BlenderCraft">
-            <Box size={18} className="text-white" />
+        <nav className="w-[52px] bg-bg-secondary border-r border-border-custom flex flex-col items-center py-3 gap-1 shrink-0">
+          <div className="w-8 h-8 rounded-lg gradient-accent flex items-center justify-center mb-2" title="BlenderCraft" style={{ boxShadow: '0 0 20px -4px rgba(232,125,13,0.35)' }}>
+            <Box size={16} className="text-white" />
           </div>
 
-          <div className="w-6 h-px bg-border-custom mb-2" />
+          <div className="w-5 h-px bg-border-custom mb-1.5" />
 
-          <NavButton
-            active={view === 'chat'}
+          <button
             onClick={() => setView('chat')}
-            icon={<MessageSquare size={18} />}
-            label="Chat"
-          />
-          <NavButton
-            active={view === 'settings'}
+            className={`w-9 h-9 rounded-lg flex items-center justify-center no-shift ${
+              view === 'chat'
+                ? 'bg-accent/15 text-accent'
+                : 'text-text-muted hover:text-text-secondary hover:bg-bg-glass-hover'
+            }`}
+            title="Chat"
+          >
+            <MessageSquare size={17} />
+          </button>
+          <button
             onClick={() => setView('settings')}
-            icon={<Settings2 size={18} />}
-            label="Settings"
-          />
+            className={`w-9 h-9 rounded-lg flex items-center justify-center no-shift ${
+              view === 'settings'
+                ? 'bg-accent/15 text-accent'
+                : 'text-text-muted hover:text-text-secondary hover:bg-bg-glass-hover'
+            }`}
+            title="Settings"
+          >
+            <Settings2 size={17} />
+          </button>
 
           <div className="flex-1" />
 
-          <div className="relative" title={blenderConnected ? 'Blender connected' : 'Blender disconnected'}>
-            <div className={`w-2.5 h-2.5 rounded-full ${blenderConnected ? 'bg-success' : 'bg-error'}`} />
-            {blenderConnected && (
-              <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-success animate-ping opacity-30" />
-            )}
+          <div className="relative mb-1" title={blenderConnected ? 'Blender connected' : 'Blender disconnected'}>
+            <div className={`w-2 h-2 rounded-full ${blenderConnected ? 'bg-success' : 'bg-error'}`} />
           </div>
         </nav>
 
-        <main className="flex-1 min-w-0 min-h-0">
+        <main className="flex-1 min-w-0 min-h-0 bg-bg-primary">
           {view === 'chat' ? (
             <Chat settings={settings} blenderConnected={blenderConnected} />
           ) : (
@@ -111,34 +106,5 @@ export default function App() {
         modelName={activeProvider?.model_id ?? ''}
       />
     </div>
-  );
-}
-
-function NavButton({
-  active,
-  onClick,
-  icon,
-  label,
-}: {
-  active: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`group relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
-        active
-          ? 'bg-accent/15 text-accent glow-accent'
-          : 'text-text-muted hover:text-text-secondary hover:bg-bg-glass-hover'
-      }`}
-      title={label}
-    >
-      {icon}
-      {active && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[7px] w-1 h-4 rounded-full bg-accent" />
-      )}
-    </button>
   );
 }
