@@ -1,7 +1,7 @@
 bl_info = {
     "name": "BlenderCraft",
     "author": "BlenderCraft",
-    "version": (1, 0, 0),
+    "version": (1, 1, 0),
     "blender": (3, 0, 0),
     "location": "View3D > Sidebar > BlenderCraft",
     "description": "AI-powered Blender control via TCP socket",
@@ -11,6 +11,7 @@ bl_info = {
 import bpy
 from bpy.props import IntProperty, BoolProperty, StringProperty
 from .server import BlenderCraftServer
+from .executor import ensure_timer_registered, unregister_timer
 
 _server = None
 
@@ -115,10 +116,12 @@ def register():
     bpy.utils.register_class(BLENDERCRAFT_OT_StopServer)
     bpy.utils.register_class(BLENDERCRAFT_OT_GetSceneInfo)
     bpy.utils.register_class(BLENDERCRAFT_PT_Panel)
+    ensure_timer_registered()
 
 
 def unregister():
     global _server
+    unregister_timer()
     if _server:
         _server.stop()
         _server = None

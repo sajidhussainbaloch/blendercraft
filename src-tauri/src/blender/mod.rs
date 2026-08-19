@@ -79,11 +79,25 @@ impl BlenderClient {
                     || e.contains("Flush error");
 
                 if is_connection_err {
-                    eprintln!("[BlenderCraft] Command failed ({e}), reconnecting and retrying...");
+                    eprintln!("[BlenderCraft] Connection error ({e}), reconnecting...");
                     self.disconnect();
-                    self.connect()?;
-                    std::thread::sleep(Duration::from_millis(200));
-                    self.try_send_command(command)
+                    match self.connect() {
+                        Ok(()) => {
+                            std::thread::sleep(Duration::from_millis(300));
+                            match self.try_send_command(command) {
+                                Ok(resp) => Ok(resp),
+                                Err(e2) => {
+                                    eprintln!("[BlenderCraft] Retry also failed ({e2}), giving up");
+                                    self.disconnect();
+                                    Err(e2)
+                                }
+                            }
+                        }
+                        Err(re) => {
+                            eprintln!("[BlenderCraft] Reconnect failed ({re})");
+                            Err(re)
+                        }
+                    }
                 } else {
                     Err(e)
                 }
