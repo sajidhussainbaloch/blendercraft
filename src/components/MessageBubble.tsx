@@ -121,7 +121,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center mt-0.5 ${
           isUser
             ? 'gradient-accent text-white'
-            : 'bg-bg-elevated text-text-muted border border-border-custom'
+            : 'bg-bg-tertiary text-text-muted border border-border-custom'
         }`}
       >
         {isUser ? <User size={13} /> : <Bot size={13} />}

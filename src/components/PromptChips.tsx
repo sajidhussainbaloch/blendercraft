@@ -36,7 +36,7 @@ export default function PromptChips({ onSelect }: PromptChipsProps) {
           onClick={() => onSelect(preset.prompt)}
           className="bg-bg-secondary border border-border-custom rounded-lg p-3 text-left hover:bg-bg-tertiary hover:border-border-hover no-shift group"
         >
-          <div className="w-8 h-8 rounded-md bg-accent/10 flex items-center justify-center mb-2 group-hover:bg-accent/15 no-shift">
+          <div className="w-8 h-8 rounded-md bg-accent/10 border border-accent/20 flex items-center justify-center mb-2 group-hover:bg-accent/15 group-hover:border-accent/30 no-shift">
             <span className="text-accent">
               {iconMap[preset.icon] || <Box size={16} />}
             </span>

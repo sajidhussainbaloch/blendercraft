@@ -5,10 +5,10 @@
   --color-bg-secondary: #14141c;
   --color-bg-tertiary: #1a1a24;
   --color-bg-elevated: #22222e;
-  --color-bg-glass: rgba(255, 255, 255, 0.03);
-  --color-bg-glass-hover: rgba(255, 255, 255, 0.06);
-  --color-border-custom: rgba(255, 255, 255, 0.06);
-  --color-border-hover: rgba(255, 255, 255, 0.12);
+  --color-bg-glass: rgba(255, 255, 255, 0.04);
+  --color-bg-glass-hover: rgba(255, 255, 255, 0.08);
+  --color-border-custom: rgba(255, 255, 255, 0.10);
+  --color-border-hover: rgba(255, 255, 255, 0.18);
   --color-border-active: rgba(232, 125, 13, 0.4);
   --color-text-primary: #ededf2;
   --color-text-secondary: #9090a8;
@@ -76,7 +76,7 @@ body {
 
 pre {
   background: #0a0a10 !important;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   padding: 14px 18px;
   overflow-x: auto;
@@ -106,7 +106,7 @@ code {
   background: rgba(255, 255, 255, 0.025);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-strong {

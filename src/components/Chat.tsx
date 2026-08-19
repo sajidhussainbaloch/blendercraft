@@ -89,9 +89,7 @@ export default function Chat({ blenderConnected }: ChatProps) {
     try {
       const taskId = `task_${Date.now()}`;
       setCurrentTaskId(taskId);
-
       const result = await runAgentTask(text);
-
       const assistantMessage: ChatMessageUI = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -124,12 +122,7 @@ export default function Chat({ blenderConnected }: ChatProps) {
       setCurrentTaskId(null);
       setMessages((prev) => [
         ...prev,
-        {
-          id: Date.now().toString(),
-          role: 'assistant',
-          content: 'Task cancelled.',
-          timestamp: Date.now(),
-        },
+        { id: Date.now().toString(), role: 'assistant', content: 'Task cancelled.', timestamp: Date.now() },
       ]);
     } catch {
       // ignore
@@ -155,11 +148,7 @@ export default function Chat({ blenderConnected }: ChatProps) {
                 <MessageBubble message={msg} />
               </div>
             ))}
-
-            {currentTaskId && (
-              <TaskProgress events={agentEvents} />
-            )}
-
+            {currentTaskId && <TaskProgress events={agentEvents} />}
             <div ref={messagesEndRef} />
           </div>
         ) : (
@@ -168,9 +157,7 @@ export default function Chat({ blenderConnected }: ChatProps) {
               <div className="w-16 h-16 mx-auto mb-5 rounded-xl gradient-accent flex items-center justify-center" style={{ boxShadow: '0 0 30px -6px rgba(232,125,13,0.4)' }}>
                 <Sparkles size={30} className="text-white" />
               </div>
-              <h1 className="text-xl font-bold text-text-primary mb-2">
-                What do you want to create?
-              </h1>
+              <h1 className="text-xl font-bold text-text-primary mb-2">What do you want to create?</h1>
               <p className="text-sm text-text-secondary max-w-sm mx-auto leading-relaxed">
                 Describe your 3D scene in plain language. BlenderCraft will build it in Blender.
               </p>
@@ -190,35 +177,23 @@ export default function Chat({ blenderConnected }: ChatProps) {
 
       <div className="shrink-0 px-5 pb-3 pt-1">
         <div className="max-w-[680px] mx-auto">
-          <div className="bg-bg-tertiary rounded-xl border border-border-custom flex items-end p-1.5 transition-colors focus-within:border-accent/40">
+          <div className="bg-bg-tertiary rounded-xl border border-border-custom flex items-end p-1.5 focus-within:border-accent/40">
             <textarea
               ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={
-                blenderConnected
-                  ? 'Describe what to create in Blender...'
-                  : 'Connect to Blender first...'
-              }
+              placeholder={blenderConnected ? 'Describe what to create in Blender...' : 'Connect to Blender first...'}
               disabled={isLoading}
               rows={1}
               className="flex-1 bg-transparent text-text-primary px-3 py-2 resize-none focus:outline-none text-sm placeholder:text-text-muted min-w-0 leading-relaxed"
             />
             {isLoading ? (
-              <button
-                onClick={handleCancel}
-                className="shrink-0 w-9 h-9 rounded-lg bg-error text-white flex items-center justify-center no-shift"
-                title="Stop task"
-              >
+              <button onClick={handleCancel} className="shrink-0 w-9 h-9 rounded-lg bg-error text-white flex items-center justify-center no-shift" title="Stop">
                 <Square size={15} />
               </button>
             ) : (
-              <button
-                onClick={() => sendMessage()}
-                disabled={!input.trim()}
-                className="shrink-0 w-9 h-9 rounded-lg gradient-accent text-white flex items-center justify-center no-shift disabled:opacity-30 disabled:cursor-not-allowed"
-              >
+              <button onClick={() => sendMessage()} disabled={!input.trim()} className="shrink-0 w-9 h-9 rounded-lg gradient-accent text-white flex items-center justify-center no-shift disabled:opacity-30 disabled:cursor-not-allowed">
                 <Send size={15} />
               </button>
             )}
